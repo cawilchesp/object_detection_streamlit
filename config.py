@@ -1,5 +1,5 @@
-
-
+from ultralytics import YOLO
+import streamlit as st
 
 # DL model config
 DETECTION_MODEL_DIR = 'D:/Data/models'
@@ -13,3 +13,8 @@ DETECTION_MODEL_LIST = [
     'yolov9c.pt',
     'yolov9e.pt'
 ]
+
+@st.cache_resource
+def load_model(model_path: str):
+    model = YOLO(model_path)
+    return model
