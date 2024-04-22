@@ -22,11 +22,12 @@ from tools.csv_sink import CSVSink
 # For debugging
 from icecream import ic
 
+st.set_page_config(layout="wide")
+
 st.title('Video Detection')
 
-
 # SIDEBAR
-st.sidebar.header("DL Model Config")
+st.sidebar.header("Model")
 
 model_type = st.sidebar.selectbox(
     "Select Model",
@@ -53,20 +54,23 @@ st.sidebar.header("Image/Video Config")
 source_video = st.sidebar.file_uploader(
     label="Choose a video..."
 )
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns([2, 5, 2])
 with col1:
-    st_frame = st.empty()
+    person_activated = st.toggle(label='Person', value=True) # 0
+    bicycle_activated = st.toggle(label='Bicycle', value=True) # 1
+    car_activated = st.toggle(label='Car', value=True) # 2
+    motorcycle_activated = st.toggle(label='Motorcycle', value=True) # 3
+    bus_activated = st.toggle(label='Bus', value=True) # 5
+    truck_activated = st.toggle(label='Truck', value=True) # 7
 with col2:
-    # kpi1, kpi2, kpi3 = st.columns(3)
-    # with kpi1:
-        st.markdown('**Frame Rate**')
-        kpi1_text = st.markdown('0')
-    # with kpi2:
-        st.markdown('**Width**')
-        kpi2_text = st.markdown('1')
-    # with kpi3:
-        st.markdown('**Height**')
-        kpi3_text = st.markdown('2')
+    st_frame = st.empty()
+with col3:
+    st.markdown('**Frame Rate**')
+    kpi1_text = st.markdown('0')
+    st.markdown('**Width**')
+    kpi2_text = st.markdown('1')
+    st.markdown('**Height**')
+    kpi3_text = st.markdown('2')
 
 if source_video:
     if st.button("Execution"):
@@ -92,6 +96,14 @@ if source_video:
                 bounding_box_annotator = sv.BoundingBoxAnnotator(thickness=line_thickness)
                 trace_annotator = sv.TraceAnnotator(position=sv.Position.CENTER, trace_length=50, thickness=line_thickness)
 
+                class_filter = []
+                if person_activated: class_filter.append(0)
+                if bicycle_activated: class_filter.append(1)
+                if car_activated: class_filter.append(2)
+                if motorcycle_activated: class_filter.append(3)
+                if bus_activated: class_filter.append(5)
+                if truck_activated: class_filter.append(7)
+
                 while cap.isOpened():
                     success, image = cap.read()
                     if success:
@@ -104,7 +116,7 @@ if source_video:
                             imgsz=640,
                             conf=confidence,
                             device='cuda' if torch.cuda.is_available() else 'cpu',
-                            # classes=class_filter,
+                            classes=class_filter,
                             retina_masks=True,
                             verbose=False
                         )[0]
