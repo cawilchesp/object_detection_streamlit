@@ -47,7 +47,6 @@ try:
 except Exception as e:
     st.error(f"Unable to load model. Please check the specified path: {model_path}")
 
-
 # image/video options
 st.sidebar.header("Image/Video Config")
 
