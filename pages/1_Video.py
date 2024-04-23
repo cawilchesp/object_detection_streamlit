@@ -65,12 +65,14 @@ with col1:
 with col2:
     st_frame = st.empty()
 with col3:
-    st.markdown('**Frame Rate**')
-    kpi1_text = st.markdown('0')
     st.markdown('**Width**')
-    kpi2_text = st.markdown('1')
+    width_text = st.markdown('0')
     st.markdown('**Height**')
-    kpi3_text = st.markdown('2')
+    height_text = st.markdown('0')
+    st.markdown('**Total Frames**')
+    total_frames_text = st.markdown('0')
+    st.markdown('**Frame Rate**')
+    fps_text = st.markdown('0')
 
 if source_video:
     if st.button("Execution"):
@@ -84,9 +86,10 @@ if source_video:
                 fps = cap.get(cv2.CAP_PROP_FPS)
                 total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-                kpi1_text.write(fps)
-                kpi2_text.write(width)
-                kpi3_text.write(height)
+                width_text.write(width)
+                height_text.write(height)
+                total_frames_text.write(total_frames)
+                fps_text.write(fps)
 
                 # Annotators
                 line_thickness = int(sv.calculate_dynamic_line_thickness(resolution_wh=(width, height)) * 0.5)
@@ -96,6 +99,7 @@ if source_video:
                 bounding_box_annotator = sv.BoundingBoxAnnotator(thickness=line_thickness)
                 trace_annotator = sv.TraceAnnotator(position=sv.Position.CENTER, trace_length=50, thickness=line_thickness)
 
+                # Class filter toggles 
                 class_filter = []
                 if person_activated: class_filter.append(0)
                 if bicycle_activated: class_filter.append(1)
