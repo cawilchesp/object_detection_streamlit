@@ -86,10 +86,10 @@ if source_video:
                 fps = cap.get(cv2.CAP_PROP_FPS)
                 total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-                width_text.write(width)
-                height_text.write(height)
-                total_frames_text.write(total_frames)
-                fps_text.write(fps)
+                width_text.write(str(width))
+                height_text.write(str(height))
+                total_frames_text.write(str(total_frames))
+                fps_text.write(str(fps))
 
                 # Annotators
                 line_thickness = int(sv.calculate_dynamic_line_thickness(resolution_wh=(width, height)) * 0.5)
