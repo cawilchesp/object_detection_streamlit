@@ -31,14 +31,14 @@ st.sidebar.header("Model")
 
 model_type = st.sidebar.selectbox(
     "Select Model",
-    config.DETECTION_MODEL_LIST
+    config.MODEL_LIST
 )
 
 confidence = float(st.sidebar.slider("Select Model Confidence", 0.3, 1.0, 0.5))
 
 model_path = ""
 if model_type:
-    model_path = Path(config.DETECTION_MODEL_DIR, str(model_type))
+    model_path = Path(config.DETECTION_MODEL_DIR, config.DETECTION_MODEL_DICT[model_type])
 else:
     st.error('Select Model in Sidebar')
 
@@ -49,8 +49,6 @@ except Exception as e:
     st.error(f"Unable to load model. Please check the specified path: {model_path}")
 
 # image/video options
-st.sidebar.header("Image/Video Config")
-
 col1, col2 = st.columns([5, 2])
 with col1:
     st_frame = st.empty()
@@ -63,8 +61,8 @@ with col2:
     fps_text = st.markdown('0')
 
 play_flag = False
-if st.button(label="Stop Webcam"): play_flag = False
 if st.button(label="Play Webcam"): play_flag = True
+if st.button(label="Stop Webcam"): play_flag = False
 
 with st.spinner("Running..."):
     cap = cv2.VideoCapture(0)
@@ -72,9 +70,9 @@ with st.spinner("Running..."):
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cap.get(cv2.CAP_PROP_FPS)
 
-    width_text.write(width)
-    height_text.write(height)
-    fps_text.write(fps)
+    width_text.write(str(width))
+    height_text.write(str(height))
+    fps_text.write(f"{fps:.2f}")
 
     # Annotators
     line_thickness = int(sv.calculate_dynamic_line_thickness(resolution_wh=(width, height)) * 0.5)
