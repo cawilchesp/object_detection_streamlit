@@ -55,21 +55,22 @@ source_image = st.file_uploader(
     label="Choose an image...",
     type=("jpg", "jpeg", "png", 'bmp', 'webp')
 )
-col1, col2, col3 = st.columns([2, 5, 2])
-with col1:
+col_classes, col_image, col_info_1, col_info_2 = st.columns([2, 5, 1, 1])
+with col_classes:
     person_activated = st.toggle(label='Person', value=True) # 0
     bicycle_activated = st.toggle(label='Bicycle', value=True) # 1
     car_activated = st.toggle(label='Car', value=True) # 2
     motorcycle_activated = st.toggle(label='Motorcycle', value=True) # 3
     bus_activated = st.toggle(label='Bus', value=True) # 5
     truck_activated = st.toggle(label='Truck', value=True) # 7
-with col2:
+with col_image:
     st_frame = st.empty()
-with col3:
+with col_info_1:
     st.markdown('**Width**')
-    width_text = st.markdown('0')
     st.markdown('**Height**')
-    height_text = st.markdown('0')
+with col_info_2:
+    width_text = st.markdown('0 px')
+    height_text = st.markdown('0 px')
 
 if source_image:
     if st.button("Process Image"):
