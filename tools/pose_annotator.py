@@ -90,21 +90,6 @@ class PoseAnnotator(BaseAnnotator):
         for object in ultralytics_results:
             object_keypoints = object.keypoints.data.cpu().numpy()[0]
             
-            # Draw pose lines
-            if lines:
-                for keypoint_line in self.keypoint_lines:
-                    line1_index, line2_index, color_index = keypoint_line
-                    x1, y1, score1 = object_keypoints[line1_index]
-                    x2, y2, score2 = object_keypoints[line2_index]
-                    if score1 > 0.5 and score2 > 0.5:
-                        cv2.line(
-                            img=scene,
-                            pt1=(int(x1),int(y1)),
-                            pt2=(int(x2),int(y2)),
-                            color=self.color_list[color_index],
-                            thickness=self.thickness,
-                            lineType=cv2.LINE_AA )
-                        
             # Draw pose points
             for keypoint_circle in self.keypoint_circles:
                 index, color_index = keypoint_circle
@@ -139,6 +124,21 @@ class PoseAnnotator(BaseAnnotator):
                             fontScale=0.25,
                             color=(0,0,0),
                             thickness=self.text_thickness,
+                            lineType=cv2.LINE_AA )
+
+            # Draw pose lines
+            if lines:
+                for keypoint_line in self.keypoint_lines:
+                    line1_index, line2_index, color_index = keypoint_line
+                    x1, y1, score1 = object_keypoints[line1_index]
+                    x2, y2, score2 = object_keypoints[line2_index]
+                    if score1 > 0.5 and score2 > 0.5:
+                        cv2.line(
+                            img=scene,
+                            pt1=(int(x1),int(y1)),
+                            pt2=(int(x2),int(y2)),
+                            color=self.color_list[color_index],
+                            thickness=self.thickness,
                             lineType=cv2.LINE_AA )
 
         return scene
@@ -179,25 +179,26 @@ class PoseAnnotator(BaseAnnotator):
         if ultralytics_results.keypoints is None:
             return scene
         
-        for object in ultralytics_results:
-            object_keypoints = object.keypoints.data.cpu().numpy()[0]
-            track_id = object.boxes.id.int().cpu().numpy()[0] if object.boxes.id is not None else None
-        
-            index = self.keypoint_names[keypoint]
-            x, y, score = int(object_keypoints[index][0]), int(object_keypoints[index][1]), object_keypoints[index][2]
-            if track_id and score > 0.5:
-                keypoint_track[track_id].append((frame_number, x, y))
+        if len(ultralytics_results.keypoints.data) == 1:
+            for object in ultralytics_results:
+                object_keypoints = object.keypoints.data.cpu().numpy()[0]
+                track_id = object.boxes.id.int().cpu().numpy()[0] if object.boxes.id is not None else None
+            
+                index = self.keypoint_names[keypoint]
+                x, y, score = int(object_keypoints[index][0]), int(object_keypoints[index][1]), object_keypoints[index][2]
+                if track_id and score > 0.5:
+                    keypoint_track[track_id].append((frame_number, x, y))
 
-            # Draw hand trajectory
-            if len(keypoint_track[track_id]) > 1:
-                pts = np.array(list(keypoint_track[track_id]), np.int32)[:, 1:3].reshape((-1, 1, 2))
-                cv2.polylines(
-                    img=scene,
-                    pts=np.int32([pts]),
-                    isClosed=False,
-                    color=(255, 255, 255),
-                    thickness=self.thickness,
-                    lineType=cv2.LINE_AA )
+                # Draw hand trajectory
+                if len(keypoint_track[track_id]) > 1:
+                    pts = np.array(list(keypoint_track[track_id]), np.int32)[:, 1:3].reshape((-1, 1, 2))
+                    cv2.polylines(
+                        img=scene,
+                        pts=np.int32([pts]),
+                        isClosed=False,
+                        color=(255, 255, 255),
+                        thickness=self.thickness,
+                        lineType=cv2.LINE_AA )
 
         return scene
 
@@ -324,29 +325,28 @@ class PoseAnnotator(BaseAnnotator):
         for object in ultralytics_results:
             object_keypoints = object.keypoints.data.cpu().numpy()[0]
             track_id = object.boxes.id.int().cpu().numpy()[0] if object.boxes.id is not None else None
-        
-            keypoint_array = np.array(object_keypoints)
-            mask = keypoint_array[:,2] >= 0.5
-            keypoint_array = keypoint_array[mask]
-
-            person_height = max(keypoint_array[:,1]) - min(keypoint_array[:,1])
-            percentage = person_height / h
             
-            fall_flag = True if percentage < 0.4 else False
-            color = (0,0,255) if percentage < 0.4 else (0,255,0)
+            mask = object_keypoints[:,2] >= 0.5
+            keypoint_mask = object_keypoints[mask]
+            if keypoint_mask.size != 0:
+                person_height = max(keypoint_mask[:,1]) - min(keypoint_mask[:,1])
+                percentage = person_height / h
+                
+                fall_flag = True if percentage < 0.4 else False
+                color = (0,0,255) if percentage < 0.4 else (0,255,0)
 
-            max_index = np.argmax(np.array(keypoint_array)[:,1])
-            min_index = np.argmin(np.array(keypoint_array)[:,1])
-            high_point = (int(np.array(keypoint_array)[max_index][0]), int(np.array(keypoint_array)[max_index][1]))
-            low_point = (int(np.array(keypoint_array)[min_index][0]), int(np.array(keypoint_array)[min_index][1]))
-            
-            cv2.line(
-                img=scene,
-                pt1=high_point,
-                pt2=low_point,
-                color=color,
-                thickness=self.thickness,
-                lineType=cv2.LINE_AA )
+                max_index = np.argmax(np.array(keypoint_mask)[:,1])
+                min_index = np.argmin(np.array(keypoint_mask)[:,1])
+                high_point = (int(np.array(keypoint_mask)[max_index][0]), int(np.array(keypoint_mask)[max_index][1]))
+                low_point = (int(np.array(keypoint_mask)[min_index][0]), int(np.array(keypoint_mask)[min_index][1]))
+                
+                cv2.line(
+                    img=scene,
+                    pt1=high_point,
+                    pt2=low_point,
+                    color=color,
+                    thickness=self.thickness,
+                    lineType=cv2.LINE_AA )
 
         return scene, fall_flag
     
@@ -426,4 +426,4 @@ class PoseAnnotator(BaseAnnotator):
                         thickness=self.thickness,
                         lineType=cv2.LINE_AA )
 
-        return scene, hands_up_flag
+        return scene
