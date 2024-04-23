@@ -33,14 +33,14 @@ st.sidebar.header("Model")
 st.cache_resource.clear()
 model_type = st.sidebar.selectbox(
     "Select Model",
-    config.DETECTION_MODEL_LIST
+    config.MODEL_LIST
 )
 
 confidence = float(st.sidebar.slider("Select Model Confidence", 0.3, 1.0, 0.5))
 
 model_path = ""
 if model_type:
-    model_path = Path(config.DETECTION_MODEL_DIR, str(model_type))
+    model_path = Path(config.DETECTION_MODEL_DIR, config.DETECTION_MODEL_DICT[model_type])
 else:
     st.error('Select Model in Sidebar')
 
@@ -51,9 +51,7 @@ except Exception as e:
     st.error(f"Unable to load model. Please check the specified path: {model_path}")
 
 # image/video options
-st.sidebar.header("Image/Video Config")
-
-source_image = st.sidebar.file_uploader(
+source_image = st.file_uploader(
     label="Choose an image...",
     type=("jpg", "jpeg", "png", 'bmp', 'webp')
 )
@@ -74,7 +72,7 @@ with col3:
     height_text = st.markdown('0')
 
 if source_image:
-    if st.button("Execution"):
+    if st.button("Process Image"):
         with st.spinner("Running..."):
             try:
                 tfile = np.asarray(bytearray(source_image.read()), dtype=np.uint8)
