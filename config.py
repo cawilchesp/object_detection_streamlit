@@ -6,9 +6,6 @@ import sys
 
 ROOT = Path('D:/Data')
 
-# Source
-SOURCES_LIST = ["Image", "Video", "Webcam"]
-
 # DL model config
 DETECTION_MODEL_DIR = ROOT / 'models' / 'yolov8'
 
