@@ -18,11 +18,27 @@ YOLOv8l = DETECTION_MODEL_DIR / "yolov8l.pt"
 YOLOv8x = DETECTION_MODEL_DIR / "yolov8x.pt"
 
 DETECTION_MODEL_LIST = [
-    "yolov8n.pt",
-    "yolov8s.pt",
-    "yolov8m.pt",
-    "yolov8l.pt",
-    "yolov8x.pt"]
+    'Nano',
+    'Small',
+    'Medium',
+    'Large',
+    'Extralarge' ]
+
+# Pose model config
+YOLOv8n_pose = DETECTION_MODEL_DIR / 'yolov8n-pose.pt'
+YOLOv8s_pose = DETECTION_MODEL_DIR / 'yolov8s-pose.pt'
+YOLOv8m_pose = DETECTION_MODEL_DIR / 'yolov8m-pose.pt'
+YOLOv8l_pose = DETECTION_MODEL_DIR / 'yolov8l-pose.pt'
+YOLOv8x_pose = DETECTION_MODEL_DIR / 'yolov8x-pose.pt'
+
+POSE_MODEL_DICT = {
+    'Nano': 'yolov8n-pose.pt',
+    'Small': 'yolov8s-pose.pt',
+    'Medium': 'yolov8m-pose.pt',
+    'Large': 'yolov8l-pose.pt',
+    'Extralarge': 'yolov8x-pose.pt'
+}
+
 
 @st.cache_resource
 def load_model(model_path):
