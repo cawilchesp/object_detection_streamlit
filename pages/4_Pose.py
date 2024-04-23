@@ -32,7 +32,7 @@ st.sidebar.header("Model")
 
 model_type = st.sidebar.selectbox(
     "Select Model",
-    config.DETECTION_MODEL_LIST
+    config.MODEL_LIST
 )
 
 confidence = float(st.sidebar.slider("Select Model Confidence", 0.3, 1.0, 0.5))
