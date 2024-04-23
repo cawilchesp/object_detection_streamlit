@@ -81,8 +81,8 @@ if source_image:
                 image = cv2.imdecode(tfile, 1)
                 height, width, channels = image.shape
 
-                width_text.write(width)
-                height_text.write(height)
+                width_text.write(str(width))
+                height_text.write(str(height))
 
                 # Annotators
                 line_thickness = int(sv.calculate_dynamic_line_thickness(resolution_wh=(width, height)) * 0.5)
