@@ -49,30 +49,38 @@ except Exception as e:
     st.error(f"Unable to load model. Please check the specified path: {model_path}")
 
 # image/video options
-col1, col2 = st.columns([5, 2])
-with col1:
+col_image, col_info_1, col_info_2 = st.columns([5, 1, 1])
+with col_image:
     st_frame = st.empty()
-with col2:
+with col_info_1:
     st.markdown('**Width**')
-    width_text = st.markdown('0')
     st.markdown('**Height**')
-    height_text = st.markdown('0')
     st.markdown('**Frame Rate**')
-    fps_text = st.markdown('0')
+    st.markdown('**Frame**')
+with col_info_2:
+    width_text = st.markdown('0 px')
+    height_text = st.markdown('0 px')
+    fps_text = st.markdown('0 FPS')
+    frame_text = st.markdown('0')
+
+col_play, col_stop, col3 = st.columns([1, 1, 5])
+with col_play:
+    play_button = st.button(label="Play Webcam")
+with col_stop:
+    stop_button = st.button(label="Stop Webcam")
 
 play_flag = False
-if st.button(label="Play Webcam"): play_flag = True
-if st.button(label="Stop Webcam"): play_flag = False
-
+if play_button: play_flag = True
+if stop_button: play_flag = False
 with st.spinner("Running..."):
     cap = cv2.VideoCapture(0)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cap.get(cv2.CAP_PROP_FPS)
 
-    width_text.write(str(width))
-    height_text.write(str(height))
-    fps_text.write(f"{fps:.2f}")
+    width_text.write(f"{width} px")
+    height_text.write(f"{height} px")
+    fps_text.write(f"{fps:.2f} FPS")
 
     # Annotators
     line_thickness = int(sv.calculate_dynamic_line_thickness(resolution_wh=(width, height)) * 0.5)
@@ -82,10 +90,11 @@ with st.spinner("Running..."):
     bounding_box_annotator = sv.BoundingBoxAnnotator(thickness=line_thickness)
     trace_annotator = sv.TraceAnnotator(position=sv.Position.CENTER, trace_length=50, thickness=line_thickness)
 
+    frame_number = 0
     while play_flag:
         success, image = cap.read()
         if not success:break
-        
+        frame_text.write(str(frame_number))
         # Resize the image to a standard size
         image = cv2.resize(image, (720, int(720 * (9 / 16))))
 
@@ -125,6 +134,6 @@ with st.spinner("Running..."):
             channels="BGR",
             use_column_width=True
         )
-        
+        frame_number += 1
     cap.release()
     
