@@ -31,12 +31,6 @@ def main():
     """
     )
 
-    # source_img = None
-    # if source_selectbox == config.SOURCES_LIST[0]: # Image
-    #     infer_uploaded_image(confidence, model)
-    # elif source_selectbox == config.SOURCES_LIST[2]: # Webcam
-    #     infer_uploaded_webcam(confidence, model)
-
 
 if __name__ == '__main__':
     main()
