@@ -103,8 +103,8 @@ if source_video:
             fps_text.write(f"{fps:.2f} FPS")
 
             # Annotators
-            line_thickness = int(sv.calculate_dynamic_line_thickness(resolution_wh=(width, height)) * 0.5)
-            text_scale = sv.calculate_dynamic_text_scale(resolution_wh=(width, height)) * 0.5
+            line_thickness = int(sv.calculate_optimal_line_thickness(resolution_wh=(width, height)) * 0.5)
+            text_scale = sv.calculate_optimal_text_scale(resolution_wh=(width, height)) * 0.5
 
             label_annotator = sv.LabelAnnotator(text_scale=text_scale, text_padding=2, text_position=sv.Position.TOP_LEFT, text_thickness=line_thickness)
             bounding_box_annotator = sv.BoundingBoxAnnotator(thickness=line_thickness)
